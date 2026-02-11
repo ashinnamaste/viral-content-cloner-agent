@@ -99,8 +99,9 @@ Perfect for:
 **Backend:**
 - Flask (Python web framework)
 - Flask-SocketIO (Real-time communication)
-- yt-dlp (YouTube data extraction)
-- youtube-transcript-api (Transcript extraction)
+- yt-dlp (YouTube video discovery)
+- Apify (Transcript extraction)
+- Google Gemini AI (Viral DNA analysis & script generation)
 
 **Frontend:**
 - React (UI framework)
