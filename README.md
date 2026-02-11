@@ -1,6 +1,6 @@
-# 🎬 Viral DNA Extractor
+# 🎬 Viral Content Cloner Agent
 
-A beautiful web interface to extract transcripts from the most popular videos on any YouTube channel. Upload the results to NotebookLM to discover viral content patterns and strategies.
+Just paste a YouTube channel URL. The agent analyzes their most popular videos, extracts the "Viral DNA" (hooks, retention loops, pacing patterns), and then generates viral scripts for YOUR topics using the same winning formula.
 
 ## ✨ Features
 
