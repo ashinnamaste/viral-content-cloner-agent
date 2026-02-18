@@ -1,52 +1,53 @@
 #!/bin/bash
 
-echo "🎬 Starting Viral DNA Extractor..."
+echo "Starting Viral Content Cloner Agent..."
 echo ""
 
-# Check if backend dependencies are installed
-if [ ! -d "backend/venv" ]; then
-    echo "📦 Setting up Python virtual environment..."
-    cd backend
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    cd ..
-fi
+# Go to project root regardless of where script is called from
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
-# Check if frontend dependencies are installed
+# Install backend dependencies if needed
+echo "Checking backend dependencies..."
+pip install -r backend/requirements.txt -q
+
+# Install frontend dependencies if needed
 if [ ! -d "frontend/node_modules" ]; then
-    echo "📦 Installing frontend dependencies..."
-    cd frontend
-    npm install
-    cd ..
+    echo "Installing frontend dependencies..."
+    cd frontend && npm install && cd ..
 fi
 
-echo ""
-echo "✅ Setup complete!"
-echo ""
-echo "Starting servers..."
-echo ""
-echo "🐍 Backend will run on http://localhost:5000"
-echo "⚛️  Frontend will run on http://localhost:3000"
-echo ""
-echo "Press Ctrl+C to stop both servers"
-echo ""
+# Kill any existing processes on our ports
+echo "Clearing ports 5002 and 3100..."
+fuser -k 5002/tcp 2>/dev/null || true
+fuser -k 3100/tcp 2>/dev/null || true
+sleep 1
 
-# Start backend in background
-cd backend
-source venv/bin/activate
-python app.py &
+echo ""
+echo "Starting backend on http://localhost:5002 ..."
+cd backend && python app.py > /tmp/vca-backend.log 2>&1 &
 BACKEND_PID=$!
-cd ..
+cd "$SCRIPT_DIR"
 
-# Wait a bit for backend to start
 sleep 3
 
-# Start frontend
-cd frontend
-npm run dev &
+echo "Starting frontend on http://localhost:3100 ..."
+cd frontend && npm run dev > /tmp/vca-frontend.log 2>&1 &
 FRONTEND_PID=$!
-cd ..
+cd "$SCRIPT_DIR"
 
-# Wait for both processes
+sleep 3
+
+echo ""
+echo "Both servers are running!"
+echo ""
+echo "  App:     http://localhost:3100"
+echo "  Backend: http://localhost:5002"
+echo ""
+echo "Logs: /tmp/vca-backend.log and /tmp/vca-frontend.log"
+echo "To stop: kill $BACKEND_PID $FRONTEND_PID"
+echo ""
+
+# Keep script alive and handle Ctrl+C
+trap "echo ''; echo 'Stopping servers...'; kill $BACKEND_PID $FRONTEND_PID 2>/dev/null; exit 0" INT
 wait $BACKEND_PID $FRONTEND_PID
